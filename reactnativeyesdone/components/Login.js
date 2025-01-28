@@ -82,7 +82,7 @@ const Login = () => {
           onChangeText={setEmail}
           keyboardType="email-address"
           autoCapitalize="none"
-          autoFocus
+         
         />
         {loginError && <Text style={styles.errorText}>{loginError}</Text>}
 
@@ -99,8 +99,9 @@ const Login = () => {
             <Text style={styles.togglePasswordText}>{passwordVisible ? 'Hide' : 'Show'}</Text>
           </TouchableOpacity>
         </View>
+       
 
-        <TouchableOpacity
+<TouchableOpacity
           style={styles.button}
           onPress={handleLogin}
           disabled={isLoading}
@@ -111,6 +112,13 @@ const Login = () => {
             <Text style={styles.buttonText}>Log In</Text>
           )}
         </TouchableOpacity>
+
+        <Text style={styles.signup}>
+          If you are a new user, signup here/
+          <Text style={styles.signtext}  onPress={() => navigation.navigate('Signup')}>
+           Sign Up
+          </Text>
+        </Text>
 
         <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
           <Text style={styles.forgotPassword}>Forgot Password?</Text>
@@ -126,11 +134,12 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     justifyContent: 'center',
+    alignItems:"center",
     backgroundColor: '#f7f7f7',
   },
   card: {
     backgroundColor: '#fff',
-    padding: 20,
+    padding: 30,
     borderRadius: 15,
     elevation: 5, // Android shadow
     shadowColor: '#000', // iOS shadow
@@ -140,34 +149,39 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 400,
     alignSelf: 'center',
+
   },
   header: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 25,
     textAlign: 'center',
     color: '#333',
   },
   input: {
     backgroundColor: '#fff',
     padding: 10,
-    marginBottom: 15,
+    marginBottom: 20,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#ddd',
   },
   button: {
     backgroundColor: '#28a745',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
+    padding: 10,
+    borderRadius: 25,
+    width:"50%",
+  alignContent:"center",
+  cursor:"pointer",
+  marginHorizontal:"auto"
+   },
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',
+  textAlign:"center",
   },
   forgotPassword: {
-    marginTop: 15,
+    marginTop: 10,
     color: '#007bff',
     textAlign: 'center',
   },
@@ -184,7 +198,16 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: 'red',
-    marginBottom: 10,
+    marginBottom: 15,
+  },
+  signup:{
+textAlign:"center",
+paddingTop:15,
+  },
+  signtext:{
+color:"#007bff",
+cursor:"pointer",
+
   },
 });
 
