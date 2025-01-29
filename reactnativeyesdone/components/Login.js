@@ -7,11 +7,13 @@ import {
   ActivityIndicator,
   StyleSheet,
   ScrollView,
+  Image,
 } from "react-native";
 import Toast from "react-native-toast-message";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import axiosInstance from "../axios";
+import Icon from "react-native-vector-icons/Ionicons";
 
 const TOKEN_KEY = "access_token";
 
@@ -83,23 +85,28 @@ const Login = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.card}>
-        <Text style={styles.header}>Log In</Text>
-
+    <ScrollView contentContainerStyle={styles.logincontainer}>
+      <View style={styles.logincard}>
+        <Text style={styles.loginheader}>Log In</Text>
+        <Image
+  source={{ uri: "https://medicalbreakthrough.org/cdn/shop/files/new-logo3r_1_-1.png?v=1732598848" }}
+  style={styles.logo}
+/>
         <TextInput
-          style={styles.input}
+          style={styles.logininput}
           placeholder="Email Address"
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
           autoCapitalize="none"
+          onFocus={() => setIsFocused(true)}  
+          onBlur={() => setIsFocused(false)} 
         />
         {loginError && <Text style={styles.errorText}>{loginError}</Text>}
 
         <View style={styles.passwordContainer}>
           <TextInput
-            style={styles.input}
+            style={styles.logininput}
             placeholder="Password"
             value={password}
             onChangeText={setPassword}
@@ -110,9 +117,11 @@ const Login = () => {
             onPress={() => setPasswordVisible(!passwordVisible)}
             style={styles.togglePassword}
           >
-            <Text style={styles.togglePasswordText}>
-              {passwordVisible ? "Hide" : "Show"}
-            </Text>
+           <Icon 
+  name={passwordVisible ? "eye-off" : "eye"} 
+  size={20} 
+  color="black" 
+/>
           </TouchableOpacity>
         </View>
 
@@ -128,18 +137,10 @@ const Login = () => {
           )}
         </TouchableOpacity>
 
-        <Text style={styles.signup}>
-          If you are a new user, signup here/
-          <Text
-            style={styles.signtext}
-            onPress={() => navigation.navigate("Signup")}
-          >
-            Sign Up
-          </Text>
-        </Text>
+     
 
         <TouchableOpacity onPress={() => navigation.navigate("ForgotPassword")}>
-          <Text style={styles.forgotPassword}>Forgot Password?</Text>
+          <Text style={styles.forgotPassword}>Forgot Your Password?</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -147,14 +148,14 @@ const Login = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
+  logincontainer: {
     flex: 1,
     padding: 20,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#f7f7f7",
   },
-  card: {
+  logincard: {
     backgroundColor: "#fff",
     padding: 30,
     borderRadius: 15,
@@ -167,29 +168,31 @@ const styles = StyleSheet.create({
     maxWidth: 400,
     alignSelf: "center",
   },
-  header: {
+  loginheader: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 25,
     textAlign: "center",
     color: "#333",
   },
-  input: {
-    backgroundColor: "#fff",
-    padding: 10,
+  logininput: {
+    backgroundColor: "#f1f1f3",
+    paddingTop: 10,
+    paddingBottom:12,
+    paddingHorizontal:10,
     marginBottom: 20,
-    borderRadius: 8,
+    borderRadius: 25,
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: "#b4aeae",
   },
   button: {
-    backgroundColor: "#28a745",
+    backgroundColor: "#0196da",
     padding: 10,
     borderRadius: 25,
-    width: "50%",
+    width: "100%",
     alignContent: "center",
     cursor: "pointer",
     marginHorizontal: "auto",
+    marginTop:10,
   },
   buttonText: {
     color: "#fff",
@@ -197,9 +200,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   forgotPassword: {
-    marginTop: 10,
-    color: "#007bff",
+    marginTop: 18,
     textAlign: "center",
+    fontSize:14,
   },
   passwordContainer: {
     position: "relative",
@@ -216,13 +219,17 @@ const styles = StyleSheet.create({
     color: "red",
     marginBottom: 15,
   },
-  signup: {
-    textAlign: "center",
-    paddingTop: 15,
-  },
   signtext: {
     color: "#007bff",
     cursor: "pointer",
+  },
+  logo: {
+    width: 180, 
+    maxWidth:280,
+    height:50,
+    resizeMode:"contain",
+    alignSelf: "center",
+    marginBottom: 20,
   },
 });
 

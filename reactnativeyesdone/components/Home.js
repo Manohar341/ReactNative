@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View,Image } from 'react-native'
 import React from 'react'
 import { Pressable, ScrollView, TouchableOpacity } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
@@ -8,18 +8,22 @@ const Home = () => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
     <View style={styles.homecard}>
-     <Text style={styles.heading}>Log in/Sign up</Text>
-      {/* <Image source={require("../assets/logo.png")} style={styles.image} /> */}
-     <Text style={styles.subtitle}>Please log in or sign up to continue</Text>
-     <TouchableOpacity  onPress={() => navigation.navigate("Signup")} style={styles.signupbutton}>
+     <Text style={styles.heading}>Log in</Text>
+          <Image
+       source={{ uri: "https://medicalbreakthrough.org/cdn/shop/files/new-logo3r_1_-1.png?v=1732598848" }}
+       style={styles.logo}
+     />
+      <Image source={{uri:'https://medicalbreakthrough.org/cdn/shop/files/new-logo3r_1_-1.png?v=1732598848'}}
+     style={{}}/>
+     {/* <Text style={styles.subtitle}>Please log in or sign up to continue</Text> */}
+     {/* <TouchableOpacity  onPress={() => navigation.navigate("Signup")} style={styles.signupbutton}>
       <Text style={styles.sgnuptext}>Signup</Text>
-     </TouchableOpacity>
+     </TouchableOpacity> */}
      <Pressable onPress={() => navigation.navigate("Login")} style={styles.loginbutton}>
       <Text style={styles.logintext}>Login</Text>
      </Pressable>
     </View>
     </ScrollView>
- 
   )
 }
 
@@ -36,7 +40,15 @@ const styles = StyleSheet.create({
 fontSize:25,
 fontWeight:500,
 textAlign:"center",
-marginBottom:26,
+
+  },
+  logo: {
+    width: 180, 
+    maxWidth:280,
+    height:50,
+    resizeMode:"contain",
+    alignSelf: "center",
+    marginBottom: 20,
   },
   homecard:{
     backgroundColor: "#fff",
@@ -47,7 +59,7 @@ marginBottom:26,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 10,
-    width: "100%",
+    width: "80%",
     maxWidth: 400,
     alignSelf: "center",
   },
@@ -75,7 +87,7 @@ marginBottom:26,
     fontWeight:600,
 },
     loginbutton:{
-      backgroundColor: "#fff",
+      backgroundColor: "#0196da",
       paddingTop: 7,
       paddingBottom:10,
       alignItems: 'center',
@@ -88,12 +100,12 @@ marginBottom:26,
   },
   logintext:{
     fontSize:16,
-    color:"black",
+    color:"white",
     fontWeight:600,
 },
   image: {
     width: 100, 
-    height: 100,
+    height:"auto",
     resizeMode: "contain", 
     marginBottom: 20,
     alignSelf: "center",
