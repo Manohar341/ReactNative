@@ -6,13 +6,14 @@ import Home from './components/Home';
 import ForgotPassword from './components/ForgotPassword';
 import Signup from './components/Signup';
 import Toast from 'react-native-toast-message';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 // import Otp from './components/Otp';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <>
+    <GestureHandlerRootView style={{ flex: 1 }}> 
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
       <Stack.Screen name="Home" component={Home}  options={{headerShown:false}}/>
@@ -23,6 +24,6 @@ export default function App() {
       </Stack.Navigator>
     </NavigationContainer>
     <Toast/>
-    </>
+    </GestureHandlerRootView>
   );
 }
