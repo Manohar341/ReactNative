@@ -1,176 +1,207 @@
-import { 
-  View, Text, TextInput, TouchableOpacity, ActivityIndicator, 
-  StyleSheet, ScrollView,
-} from 'react-native';
-import React, { useState } from 'react';
-import axiosInstance from '../axios';
-import Toast from "react-native-toast-message";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ActivityIndicator,
+  StyleSheet,
+  ScrollView,
+} from "react-native";
+import React, { useState } from "react";
+import axiosInstance from "../axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
 
-const Signup = ({ navigation }) => {
-    const [formData, setFormData] = useState({
-      firstName: "",
-      lastName: "",
-      phone: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    });
+const Signup = () => {
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    phone: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const navigation = useNavigation();
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-    const [error, setError] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
+  const handleInputChange = (name, value) => {
+    setFormData({ ...formData, [name]: value });
+  };
 
-    const handleInputChange = (name, value) => {
-      setFormData({ ...formData, [name]: value });
-    };
+  const handlePhoneChange = (value) => {
+    let formattedValue = value.replace(/\D/g, ""); // Remove non-numeric characters
 
-    const handlePhoneChange = (value) => {
-      let formattedValue = value.replace(/\D/g, ""); // Remove non-numeric characters
+    if (formattedValue.length <= 3) {
+      formattedValue = formattedValue.replace(/(\d{0,3})/, "$1");
+    } else if (formattedValue.length <= 6) {
+      formattedValue = formattedValue.replace(/(\d{3})(\d{0,3})/, "$1-$2");
+    } else {
+      formattedValue = formattedValue.replace(
+        /(\d{3})(\d{3})(\d{0,4})/,
+        "$1-$2-$3"
+      );
+    }
 
-      if (formattedValue.length <= 3) {
-        formattedValue = formattedValue.replace(/(\d{0,3})/, "$1");
-      } else if (formattedValue.length <= 6) {
-        formattedValue = formattedValue.replace(/(\d{3})(\d{0,3})/, "$1-$2");
-      } else {
-        formattedValue = formattedValue.replace(/(\d{3})(\d{3})(\d{0,4})/, "$1-$2-$3");
-      }
+    setFormData({ ...formData, phone: formattedValue });
+  };
 
-      setFormData({ ...formData, phone: formattedValue });
-    };
+  const handleRegister = async () => {
+    setError("");
 
-    const handleRegister = async () => {
-      setError("");
+    if (
+      !formData.firstName ||
+      !formData.lastName ||
+      !formData.phone ||
+      !formData.email ||
+      !formData.password ||
+      !formData.confirmPassword
+    ) {
+      setError("Please fill in all required fields.");
+      return;
+    }
 
-      if (!formData.firstName || !formData.lastName || !formData.phone || 
-          !formData.email || !formData.password || !formData.confirmPassword) {
-        setError("Please fill in all required fields.");
-        return;
-      }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
 
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(formData.email)) {
-        setError("Please enter a valid email address.");
-        return;
-      }
+    const phoneRegex = /^\d{3}-\d{3}-\d{4}$/;
+    if (!phoneRegex.test(formData.phone)) {
+      setError("Please enter a valid phone number (XXX-XXX-XXXX).");
+      return;
+    }
 
-      const phoneRegex = /^\d{3}-\d{3}-\d{4}$/;
-      if (!phoneRegex.test(formData.phone)) {
-        setError("Please enter a valid phone number (XXX-XXX-XXXX).");
-        return;
-      }
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(formData.password)) {
+      setError(
+        "Password must have at least 8 characters, one uppercase letter, one number, and one special character."
+      );
+      return;
+    }
 
-      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-      if (!passwordRegex.test(formData.password)) {
-        setError("Password must have at least 8 characters, one uppercase letter, one number, and one special character.");
-        return;
-      }
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
 
-      if (formData.password !== formData.confirmPassword) {
-        setError("Passwords do not match.");
-        return;
-      }
+    setIsLoading(true);
 
-      setIsLoading(true);
+    try {
+      const response = await axiosInstance.post("register", {
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        phone: formData.phone,
+        email: formData.email,
+        password: formData.password,
+        confirm_password: formData.confirmPassword,
+        status: 1,
+      });
 
-      try {
-        const response = await axiosInstance.post("register", {
-          first_name: formData.firstName,
-          last_name: formData.lastName,
-          phone: formData.phone,
-          email: formData.email,
-          password: formData.password,
-          confirm_password: formData.confirmPassword,
-          status: 1,
-        });
-
-        if (response.status === 200 || response.status === 201) {
-          Toast.show({
-                  type: "success",
-                  text1: "Register Successful!",
-                });
-        
-                setTimeout(() => {
-                  navigation.navigate("Login");
-                }, 1000);
-        
-        } else {
+      if (response.data.status === 200) {
+        await AsyncStorage.setItem("userEmail", formData.email);
+        if (response.data.data && Array.isArray(response.data.data)) {  
+        } else if (response.data.data.access_token) {
           setError("User is already registered. Please log in.");
         }
-
-        setFormData({
-          firstName: "",
-          lastName: "",
-          phone: "",
-          email: "",
-          password: "",
-          confirmPassword: "",
-        });
-
-      } catch (error) {
-        console.error("API Error:", error);
-        if (error.response && error.response.data && error.response.data.message) {
-          setError(error.response.data.message + " Please click on login.");
-        } else {
-          setError("An unexpected error occurred. Please try again.");
-        }
-      } finally {
-        setIsLoading(false);
       }
-    };
+    } catch (error) {
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        setError(error.response.data.message + " Please click on login.");
+      }
+    } finally {
+      setIsLoading(false);
 
-    return (
-      <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.card}>
-          <Text style={styles.title}>Sign Up</Text>
+      // Reset the form data only after navigation or error handling
+      setFormData({
+        firstName: "",
+        lastName: "",
+        phone: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+       
+      });
+      navigation.navigate("Login")
+    }
+  };
 
-          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.card}>
+        <Text style={styles.title}>Sign Up</Text>
 
-          <TextInput
-            style={styles.input}
-            placeholder="First Name"
-            value={formData.firstName}
-            onChangeText={(value) => handleInputChange("firstName", value)}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Last Name"
-            value={formData.lastName}
-            onChangeText={(value) => handleInputChange("lastName", value)}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Phone Number (XXX-XXX-XXXX)"
-            keyboardType="phone-pad"
-            value={formData.phone}
-            onChangeText={handlePhoneChange}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            keyboardType="email-address"
-            value={formData.email}
-            onChangeText={(value) => handleInputChange("email", value)}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            secureTextEntry
-            value={formData.password}
-            onChangeText={(value) => handleInputChange("password", value)}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Confirm Password"
-            secureTextEntry
-            value={formData.confirmPassword}
-            onChangeText={(value) => handleInputChange("confirmPassword", value)}
-          />
+        {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-          <TouchableOpacity style={styles.button} onPress={handleRegister} disabled={isLoading}>
-            {isLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Sign Up</Text>}
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    );
+        <TextInput
+          style={styles.input}
+          placeholder="First Name"
+          value={formData.firstName}
+          onChangeText={(value) => handleInputChange("firstName", value)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Last Name"
+          value={formData.lastName}
+          onChangeText={(value) => handleInputChange("lastName", value)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Phone Number (XXX-XXX-XXXX)"
+          keyboardType="phone-pad"
+          value={formData.phone}
+          onChangeText={handlePhoneChange}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          keyboardType="email-address"
+          value={formData.email}
+          onChangeText={(value) => handleInputChange("email", value)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          secureTextEntry
+          value={formData.password}
+          onChangeText={(value) => handleInputChange("password", value)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Confirm Password"
+          secureTextEntry
+          value={formData.confirmPassword}
+          onChangeText={(value) => handleInputChange("confirmPassword", value)}
+        />
+
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleRegister}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.buttonText}>Sign Up</Text>
+          )}
+        </TouchableOpacity>
+
+        {/* Conditionally render the "Already registered? Please login" text */}
+        <Text
+          style={styles.loginText}
+          onPress={() => navigation.navigate("Login")}
+        >
+          Already registered? Please login
+        </Text>
+      </View>
+    </ScrollView>
+  );
 };
 
 export default Signup;
