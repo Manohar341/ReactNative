@@ -124,8 +124,7 @@ const Login = () => {
 />
           </TouchableOpacity>
         </View>
-
-        <TouchableOpacity
+         <TouchableOpacity
           style={styles.button}
           onPress={handleLogin}
           disabled={isLoading}
